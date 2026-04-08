@@ -1,0 +1,55 @@
+# ── Go ────────────────────────────────────────────────────────────
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.so.*
+*.dylib
+*.o
+*.a
+*.test
+*.out
+
+# Dependency directories
+vendor/
+go.sum
+
+# Build output
+bin/
+dist/
+*.mod.bak
+
+# ── IDE ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.vim
+
+# ── Environment ────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+.env.qa
+
+# ── Storage & Uploads ──────────────────────────────────────────────
+data/
+data/uploads
+/tmp/
+*.tmp
+
+# ── Development ────────────────────────────────────────────────────
+tmp/
+.air.toml.local
+
+# ── OS ─────────────────────────────────────────────────────────────
+Thumbs.db
+.DS_Store
+*.log

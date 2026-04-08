@@ -1,0 +1,32 @@
+# Build artifacts
+bin/
+tmp/
+
+# Development data
+data/
+*.db
+
+# Environment files (never bake secrets into the image)
+.env
+.env.*
+!.env.example
+
+# Git
+.git/
+.gitignore
+
+# GitHub
+.github/
+
+# Editor / OS
+.DS_Store
+*.swp
+*.idea/
+.vscode/
+
+# Test coverage
+coverage.out
+*.test
+
+# Docker compose files (not needed inside the container)
+docker-compose*.yml

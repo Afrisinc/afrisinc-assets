@@ -1,0 +1,77 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────
+#  Afrisinc Asset Server — Development Compose
+#  Usage:
+#    docker compose -f docker-compose.dev.yml up
+# ─────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL (dev — port exposed for GUI tools) ──────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: afrisinc_db_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     afrisinc
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB:       afrisinc_assets
+    ports:
+      - "5432:5432"           # exposed so you can connect with TablePlus etc.
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U afrisinc -d afrisinc_assets"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - dev
+
+  # ── Asset server (Air hot-reload) ─────────────────────────────
+  server:
+    build:
+      context: .
+      target: development     # uses the golang:alpine + Air stage
+    container_name: afrisinc_server_dev
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SERVER_ADDR:        ":8080"
+      DATABASE_URL:       "postgres://afrisinc:devpassword@postgres:5432/afrisinc_assets?sslmode=disable"
+      STORAGE_DRIVER:     "local"
+      STORAGE_LOCAL_ROOT: "/app/data/uploads"
+      ASSET_BASE_URL:     "http://localhost:8080"
+      API_KEY:            "dev-api-key-change-in-production"
+      UPLOAD_MAX_MB:      "50"
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app                          # full source mount for Air
+      - go_mod_cache:/go/pkg/mod        # module cache survives container restarts
+      - uploads_dev:/app/data/uploads
+    networks:
+      - dev
+
+  # ── Adminer (lightweight DB GUI) ──────────────────────────────
+  adminer:
+    image: adminer:latest
+    container_name: afrisinc_adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - dev
+
+volumes:
+  postgres_dev_data:
+  uploads_dev:
+  go_mod_cache:
+
+networks:
+  dev:
+    driver: bridge

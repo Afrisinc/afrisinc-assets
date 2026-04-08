@@ -1,0 +1,30 @@
+run:
+  timeout: 5m
+  go: "1.22"
+
+linters:
+  enable:
+    - errcheck       # check all errors are handled
+    - gosimple       # simplification suggestions
+    - govet          # go vet checks
+    - ineffassign    # detect ineffectual assignments
+    - staticcheck    # comprehensive static analysis
+    - unused         # find unused code
+    - gofmt          # formatting
+    - goimports      # import ordering
+    - misspell       # catch common typos
+    - noctx          # detect HTTP requests without context
+    - bodyclose      # ensure response bodies are closed
+    - sqlcloserows   # ensure sql.Rows are closed
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+  govet:
+    enable-all: true
+
+issues:
+  exclude-rules:
+    # Allow unhandled errors in defer statements (e.g. defer rows.Close())
+    - linters: [errcheck]
+      source: "^\\s*defer "
