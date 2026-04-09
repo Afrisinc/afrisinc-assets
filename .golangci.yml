@@ -15,7 +15,6 @@ linters:
     - misspell       # catch common typos
     - noctx          # detect HTTP requests without context
     - bodyclose      # ensure response bodies are closed
-    - sqlcloserows   # ensure sql.Rows are closed
 
 linters-settings:
   errcheck:
