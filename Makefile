@@ -2,6 +2,8 @@ APP      := afrisinc-assets
 CMD      := ./cmd/server
 BIN      := ./bin/$(APP)
 GOFLAGS  := -ldflags="-s -w"
+GOPATH   := $(shell go env GOPATH)
+AIR      := $(GOPATH)/bin/air
 
 .PHONY: build run dev test lint migrate clean
 
@@ -16,7 +18,8 @@ run: build
 
 ## dev: run with auto-reload (requires: go install github.com/air-verse/air@latest)
 dev:
-	air
+	@command -v $(AIR) >/dev/null 2>&1 || go install github.com/air-verse/air@latest
+	$(AIR)
 
 ## test: run all tests with race detector
 test:

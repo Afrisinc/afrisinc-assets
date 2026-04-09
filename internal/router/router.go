@@ -17,6 +17,7 @@ type Deps struct {
 	Asset   *handler.AssetHandler
 	Folder  *handler.FolderHandler
 	Health  *handler.HealthHandler
+	Docs    *handler.DocsHandler
 	Config  *config.Config
 	Limiter *middleware.RateLimiter
 }
@@ -43,6 +44,10 @@ func New(d *Deps) http.Handler {
 	// ── Health probes (no auth — Nginx/load balancer hits these) ─────────
 	r.Get("/health/live", d.Health.Live)
 	r.Get("/health/ready", d.Health.Ready)
+
+	// ── API Documentation (no auth) ─────────────────────────────────────
+	r.Get("/api/docs", d.Docs.SwaggerHTML)
+	r.Get("/api/docs/openapi.yaml", d.Docs.OpenAPI)
 
 	// ── API v1 (authenticated) ────────────────────────────────────────────
 	r.Route("/api/v1", func(r chi.Router) {

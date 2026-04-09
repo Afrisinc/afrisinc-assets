@@ -69,6 +69,7 @@ func New(cfg *config.Config) (*Server, error) {
 	assetH := handler.NewAssetHandler(assetSvc, &cfg.Upload)
 	folderH := handler.NewFolderHandler(folderSvc)
 	healthH := handler.NewHealthHandler(db)
+	docsH := handler.NewDocsHandler()
 
 	// ── Rate limiter: 60 req/s per IP, burst of 20 ───────────────────────
 	limiter := middleware.NewRateLimiter(60, 20)
@@ -78,6 +79,7 @@ func New(cfg *config.Config) (*Server, error) {
 		Asset:   assetH,
 		Folder:  folderH,
 		Health:  healthH,
+		Docs:    docsH,
 		Config:  cfg,
 		Limiter: limiter,
 	})
