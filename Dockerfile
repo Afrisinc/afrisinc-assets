@@ -48,7 +48,7 @@ USER 1001:1001
 # Uploads volume mount point
 VOLUME ["/data/uploads"]
 
-EXPOSE 8080
+EXPOSE 8095
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD ["/server", "-health"] 
