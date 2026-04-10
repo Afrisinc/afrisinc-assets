@@ -2,7 +2,6 @@ run:
   timeout: 5m
   go: "1.22"
   build-tags: []
-  modules-download-mode: readonly
 
 linters:
   enable:
