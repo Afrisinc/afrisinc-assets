@@ -1,6 +1,8 @@
 run:
   timeout: 5m
   go: "1.22"
+  build-tags: []
+  modules-download-mode: readonly
 
 linters:
   enable:
@@ -15,6 +17,8 @@ linters:
     - misspell       # catch common typos
     - noctx          # detect HTTP requests without context
     - bodyclose      # ensure response bodies are closed
+  disable:
+    - typecheck      # type checking done by go test instead
 
 linters-settings:
   errcheck:
