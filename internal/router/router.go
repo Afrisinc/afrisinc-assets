@@ -56,25 +56,25 @@ func New(d *Deps) http.Handler {
 
 		// Assets
 		r.Route("/assets", func(r chi.Router) {
-			r.Get("/", d.Asset.List)         // GET    /api/v1/assets
-			r.Post("/", d.Asset.Upload)      // POST   /api/v1/assets
-			r.Get("/stats", d.Asset.Stats)   // GET    /api/v1/assets/stats
+			r.Get("/", d.Asset.List)          // GET    /api/v1/assets
+			r.Post("/", d.Asset.Upload)       // POST   /api/v1/assets
+			r.Get("/stats", d.Asset.Stats)    // GET    /api/v1/assets/stats
 			r.Delete("/", d.Asset.BulkDelete) // DELETE /api/v1/assets  (body: {"ids":[…]})
 
 			r.Route("/{id}", func(r chi.Router) {
-				r.Get("/", d.Asset.Get)               // GET    /api/v1/assets/{id}
-				r.Delete("/", d.Asset.Delete)         // DELETE /api/v1/assets/{id}
-				r.Get("/download", d.Asset.Download)  // GET    /api/v1/assets/{id}/download
+				r.Get("/", d.Asset.Get)              // GET    /api/v1/assets/{id}
+				r.Delete("/", d.Asset.Delete)        // DELETE /api/v1/assets/{id}
+				r.Get("/download", d.Asset.Download) // GET    /api/v1/assets/{id}/download
 			})
 		})
 
 		// Folders
 		r.Route("/folders", func(r chi.Router) {
-			r.Get("/", d.Folder.List)         // GET    /api/v1/folders
-			r.Post("/", d.Folder.Create)      // POST   /api/v1/folders
+			r.Get("/", d.Folder.List)    // GET    /api/v1/folders
+			r.Post("/", d.Folder.Create) // POST   /api/v1/folders
 
 			r.Route("/{id}", func(r chi.Router) {
-				r.Get("/", d.Folder.Get)      // GET    /api/v1/folders/{id}
+				r.Get("/", d.Folder.Get)       // GET    /api/v1/folders/{id}
 				r.Delete("/", d.Folder.Delete) // DELETE /api/v1/folders/{id}
 			})
 		})

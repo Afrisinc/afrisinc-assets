@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"net/http"
 	_ "embed"
+	"net/http"
 )
 
 //go:embed docs/openapi.yaml

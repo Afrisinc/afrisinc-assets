@@ -37,9 +37,9 @@ func (h *HealthHandler) Ready(w http.ResponseWriter, r *http.Request) {
 
 	stat := h.db.Stat()
 	response.JSON(w, http.StatusOK, map[string]any{
-		"status":           "ok",
-		"db_total_conns":   stat.TotalConns(),
-		"db_idle_conns":    stat.IdleConns(),
+		"status":            "ok",
+		"db_total_conns":    stat.TotalConns(),
+		"db_idle_conns":     stat.IdleConns(),
 		"db_acquired_conns": stat.AcquiredConns(),
 	})
 }

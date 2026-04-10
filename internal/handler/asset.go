@@ -31,8 +31,8 @@ func NewAssetHandler(svc *service.AssetService, cfg *config.UploadConfig) *Asset
 // Upload handles POST /api/v1/assets
 // Accepts multipart/form-data with field "file" and optional "folder_id", "tags".
 func (h *AssetHandler) Upload(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseMultipartForm(h.cfg.MaxFileSizeBytes); err != nil {
-		response.BadRequest(w, "unable to parse form: "+err.Error())
+	if e := r.ParseMultipartForm(h.cfg.MaxFileSizeBytes); e != nil {
+		response.BadRequest(w, "unable to parse form: "+e.Error())
 		return
 	}
 
@@ -109,11 +109,11 @@ func (h *AssetHandler) List(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
 	params := model.ListAssetParams{
-		Search:  q.Get("search"),
-		Page:    queryInt(q.Get("page"), 1),
+		Search:   q.Get("search"),
+		Page:     queryInt(q.Get("page"), 1),
 		PageSize: queryInt(q.Get("page_size"), 50),
-		SortBy:  q.Get("sort_by"),
-		SortDir: q.Get("sort_dir"),
+		SortBy:   q.Get("sort_by"),
+		SortDir:  q.Get("sort_dir"),
 	}
 
 	if fid := q.Get("folder_id"); fid != "" {

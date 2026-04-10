@@ -10,11 +10,11 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig
-	DB       DBConfig
-	Storage  StorageConfig
-	Auth     AuthConfig
-	Upload   UploadConfig
+	Server  ServerConfig
+	DB      DBConfig
+	Storage StorageConfig
+	Auth    AuthConfig
+	Upload  UploadConfig
 }
 
 type ServerConfig struct {

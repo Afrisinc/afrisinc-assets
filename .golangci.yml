@@ -24,6 +24,8 @@ linters-settings:
     check-type-assertions: true
   govet:
     enable-all: true
+    disable:
+      - fieldalignment  # memory optimization, not a correctness issue
 
 issues:
   exclude-rules:

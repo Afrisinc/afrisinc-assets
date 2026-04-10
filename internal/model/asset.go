@@ -6,19 +6,19 @@ import (
 
 // Asset represents a single stored file.
 type Asset struct {
-	ID         string    `json:"id"`
-	FolderID   *string   `json:"folder_id,omitempty"`
-	Name       string    `json:"name"`
-	OriginalName string  `json:"original_name"`
-	MIMEType   string    `json:"mime_type"`
-	SizeBytes  int64     `json:"size_bytes"`
-	Width      *int      `json:"width,omitempty"`  // nil for non-image types
-	Height     *int      `json:"height,omitempty"`
-	StorageKey string    `json:"-"` // internal storage path, never exposed
-	PublicURL  string    `json:"url"`
-	Tags       []string  `json:"tags"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID           string    `json:"id"`
+	FolderID     *string   `json:"folder_id,omitempty"`
+	Name         string    `json:"name"`
+	OriginalName string    `json:"original_name"`
+	MIMEType     string    `json:"mime_type"`
+	SizeBytes    int64     `json:"size_bytes"`
+	Width        *int      `json:"width,omitempty"` // nil for non-image types
+	Height       *int      `json:"height,omitempty"`
+	StorageKey   string    `json:"-"` // internal storage path, never exposed
+	PublicURL    string    `json:"url"`
+	Tags         []string  `json:"tags"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // AssetType classifies the file category from its MIME type.

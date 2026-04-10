@@ -87,7 +87,7 @@ func HumanSize(bytes int64) string {
 							formatF(f), "0"), ".") + " " + s
 					}(float64(bytes)/float64(div), suffixes[exp]),
 					".", ".", 1), "", "", 1),
-		"0"), ".")
+			"0"), ".")
 }
 
 func formatF(f float64) string {
