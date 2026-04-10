@@ -23,7 +23,7 @@ jobs:
         run: go mod tidy
 
       - name: Format code
-        run: gofmt -w ./...
+        run: gofmt -w ./cmd ./internal ./pkg
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v4
