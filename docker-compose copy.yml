@@ -1,0 +1,44 @@
+services:
+  # ── Asset Server ───────────────────────────────────────────────
+  afrisinc_assets_qa:
+    image: afrisinc/assets:${TAG:-latest}
+    container_name: afrisinc_assets_qa
+    env_file:
+      - .env.qa
+    ports:
+      - "127.0.0.1:8091:8091"   # localhost only — NPM proxies via afrisinc_net
+    restart: unless-stopped
+    volumes:
+      - uploads_data:/data/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8091/health/live || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - afrisinc_net
+      - qa_network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.10"
+          memory: 64M      
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  uploads_data:
+    driver: local
+
+networks:
+  backend:
+    internal: true          # postgres is never reachable from outside
+  frontend:
+    driver: bridge

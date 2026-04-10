@@ -165,7 +165,7 @@ jobs:
 
             echo "$DEPLOY_GHCR_TOKEN" | docker login ghcr.io -u "$DEPLOY_GHCR_USERNAME" --password-stdin
 
-            docker compose -p assets-qa --env-file .env.qa -f docker-compose.yml pull
-            docker compose -p assets-qa --env-file .env.qa -f docker-compose.yml up -d
+            docker compose -p afrisinc-assets-qa --env-file .env.qa -f docker-compose.yml pull
+            docker compose -p afrisinc-assets-qa --env-file .env.qa -f docker-compose.yml up -d
             docker image prune -af
-            docker compose -p assets-qa --env-file .env.qa -f docker-compose.yml ps
+            docker compose -p afrisinc-assets-qa --env-file .env.qa -f docker-compose.yml ps
