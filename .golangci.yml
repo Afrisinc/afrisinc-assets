@@ -26,6 +26,7 @@ linters-settings:
     enable-all: true
     disable:
       - fieldalignment  # memory optimization, not a correctness issue
+      - shadow          # too strict; err shadowing is common pattern
 
 issues:
   exclude-rules:
