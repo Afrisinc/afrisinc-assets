@@ -82,12 +82,16 @@ func (h *AssetHandler) Upload(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Create a new Reader from the buffer (bytes.Buffer.Read() consumes state)
+	fileSize := int64(fileBuffer.Len())
+	fileReader := bytes.NewReader(fileBuffer.Bytes())
+
 	in := &service.UploadInput{
 		FolderID:     folderID,
 		OriginalName: header.Filename,
 		MIMEType:     mimeType,
-		SizeBytes:    int64(fileBuffer.Len()),
-		Reader:       fileBuffer,
+		SizeBytes:    fileSize,
+		Reader:       fileReader,
 		Tags:         tags,
 	}
 
