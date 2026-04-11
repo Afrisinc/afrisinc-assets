@@ -1,0 +1,818 @@
+{
+  "info": {
+    "name": "Afrisinc Assets API",
+    "description": "Complete API collection for Afrisinc Assets service - File upload, retrieval, and management with folder organization",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "value",
+        "value": "{{API_KEY}}",
+        "type": "string"
+      },
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Liveness Probe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/health/live",
+              "host": ["{{BASE_URL}}"],
+              "path": ["health", "live"]
+            },
+            "description": "Check if the service is running. Used by Kubernetes/load balancers."
+          },
+          "response": [
+            {
+              "name": "Healthy",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/health/live",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["health", "live"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"ok\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Readiness Probe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/health/ready",
+              "host": ["{{BASE_URL}}"],
+              "path": ["health", "ready"]
+            },
+            "description": "Check if the service is ready to accept requests. Verifies database connection."
+          },
+          "response": [
+            {
+              "name": "Ready",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/health/ready",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["health", "ready"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"ok\": true\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "item": [
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/docs",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "docs"]
+            },
+            "description": "Interactive API documentation (Swagger UI)"
+          }
+        },
+        {
+          "name": "OpenAPI Specification",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/docs/openapi.yaml",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "docs", "openapi.yaml"]
+            },
+            "description": "OpenAPI 3.0.0 specification in YAML format"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assets",
+      "description": "File upload, retrieval, and management operations",
+      "item": [
+        {
+          "name": "Upload Asset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/image.jpg",
+                  "description": "File to upload (required)"
+                },
+                {
+                  "key": "folder_id",
+                  "value": "",
+                  "type": "text",
+                  "description": "Optional folder ID (UUID)"
+                },
+                {
+                  "key": "tags",
+                  "value": "important,client-abc",
+                  "type": "text",
+                  "description": "Comma-separated tags for categorization"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/assets",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "assets"]
+            },
+            "description": "Upload a file with optional folder assignment and tags. Supports multipart/form-data."
+          },
+          "response": [
+            {
+              "name": "Asset Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": []
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/assets",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "assets"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"name\": \"550e8400-e29b-41d4-a716-446655440000.jpg\",\n  \"original_name\": \"profile.jpg\",\n  \"mime_type\": \"image/jpeg\",\n  \"size_bytes\": 245678,\n  \"folder_id\": null,\n  \"tags\": [\"important\"],\n  \"created_at\": \"2026-04-11T10:30:00Z\",\n  \"url\": \"https://assets.afrisinc.com/550e8400-e29b-41d4-a716-446655440000.jpg\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Assets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/assets?page=1&page_size=50&sort_by=created_at&sort_dir=desc",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "assets"],
+              "query": [
+                {
+                  "key": "folder_id",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Filter by folder ID"
+                },
+                {
+                  "key": "type",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Filter by asset type (image, video, document, font)"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Search by filename or tags"
+                },
+                {
+                  "key": "tags",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Comma-separated tags to filter by"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "page_size",
+                  "value": "50",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "created_at",
+                  "description": "Field to sort by (name, created_at, size)"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "desc",
+                  "description": "Sort direction (asc, desc)"
+                }
+              ]
+            },
+            "description": "Retrieve a paginated list of assets with optional filtering and sorting."
+          },
+          "response": [
+            {
+              "name": "Assets List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/assets?page=1&page_size=50",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "assets"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "50"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"assets\": [\n    {\n      \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"name\": \"550e8400-e29b-41d4-a716-446655440000.jpg\",\n      \"original_name\": \"profile.jpg\",\n      \"mime_type\": \"image/jpeg\",\n      \"size_bytes\": 245678,\n      \"folder_id\": null,\n      \"tags\": [\"profile\"],\n      \"created_at\": \"2026-04-11T10:30:00Z\",\n      \"url\": \"https://assets.afrisinc.com/550e8400-e29b-41d4-a716-446655440000.jpg\"\n    }\n  ],\n  \"total\": 1,\n  \"page\": 1,\n  \"page_size\": 50\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Asset Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/assets/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "assets", "550e8400-e29b-41d4-a716-446655440000"]
+            },
+            "description": "Retrieve metadata for a specific asset by ID."
+          },
+          "response": [
+            {
+              "name": "Asset Details",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/assets/550e8400-e29b-41d4-a716-446655440000",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "assets", "550e8400-e29b-41d4-a716-446655440000"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"name\": \"550e8400-e29b-41d4-a716-446655440000.jpg\",\n  \"original_name\": \"profile.jpg\",\n  \"mime_type\": \"image/jpeg\",\n  \"size_bytes\": 245678,\n  \"folder_id\": null,\n  \"tags\": [\"profile\"],\n  \"created_at\": \"2026-04-11T10:30:00Z\",\n  \"url\": \"https://assets.afrisinc.com/550e8400-e29b-41d4-a716-446655440000.jpg\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Download Asset",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/assets/550e8400-e29b-41d4-a716-446655440000/download",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "assets", "550e8400-e29b-41d4-a716-446655440000", "download"]
+            },
+            "description": "Download the raw file. Returns the file with appropriate Content-Type and Content-Disposition headers."
+          },
+          "response": [
+            {
+              "name": "File Downloaded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/assets/550e8400-e29b-41d4-a716-446655440000/download",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "assets", "550e8400-e29b-41d4-a716-446655440000", "download"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "image/jpeg"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=\"profile.jpg\""
+                }
+              ],
+              "cookie": [],
+              "body": "[Binary file content]"
+            }
+          ]
+        },
+        {
+          "name": "Get Asset Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/assets/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "assets", "stats"]
+            },
+            "description": "Retrieve aggregate statistics about all assets."
+          },
+          "response": [
+            {
+              "name": "Statistics",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/assets/stats",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "assets", "stats"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"total_count\": 150,\n  \"total_size_bytes\": 524288000,\n  \"by_type\": {\n    \"image/jpeg\": 50,\n    \"image/png\": 30,\n    \"video/mp4\": 20,\n    \"application/pdf\": 50\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Asset",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/assets/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "assets", "550e8400-e29b-41d4-a716-446655440000"]
+            },
+            "description": "Delete a single asset by ID."
+          },
+          "response": [
+            {
+              "name": "Deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/assets/550e8400-e29b-41d4-a716-446655440000",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "assets", "550e8400-e29b-41d4-a716-446655440000"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Bulk Delete Assets",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"550e8400-e29b-41d4-a716-446655440000\",\n    \"550e8400-e29b-41d4-a716-446655440001\",\n    \"550e8400-e29b-41d4-a716-446655440002\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/assets",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "assets"]
+            },
+            "description": "Delete multiple assets in a single request (max 100 at once)."
+          },
+          "response": [
+            {
+              "name": "All Deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": []\n}"
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/assets",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "assets"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Folders",
+      "description": "Folder organization and management",
+      "item": [
+        {
+          "name": "Create Folder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Client Projects\",\n  \"description\": \"All assets for client ABC\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/folders",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "folders"]
+            },
+            "description": "Create a new folder for organizing assets."
+          },
+          "response": [
+            {
+              "name": "Folder Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Client Projects\",\n  \"description\": \"All assets for client ABC\"\n}"
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/folders",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "folders"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"name\": \"Client Projects\",\n  \"description\": \"All assets for client ABC\",\n  \"created_at\": \"2026-04-11T10:30:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Folders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/folders",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "folders"]
+            },
+            "description": "Retrieve all folders."
+          },
+          "response": [
+            {
+              "name": "Folders List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/folders",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "folders"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"folders\": [\n    {\n      \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n      \"name\": \"Client Projects\",\n      \"description\": \"All assets for client ABC\",\n      \"created_at\": \"2026-04-11T10:30:00Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Folder Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/folders/123e4567-e89b-12d3-a456-426614174000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "folders", "123e4567-e89b-12d3-a456-426614174000"]
+            },
+            "description": "Retrieve details for a specific folder."
+          },
+          "response": [
+            {
+              "name": "Folder Details",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/folders/123e4567-e89b-12d3-a456-426614174000",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "folders", "123e4567-e89b-12d3-a456-426614174000"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"name\": \"Client Projects\",\n  \"description\": \"All assets for client ABC\",\n  \"created_at\": \"2026-04-11T10:30:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Folder",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{API_KEY}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/folders/123e4567-e89b-12d3-a456-426614174000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "folders", "123e4567-e89b-12d3-a456-426614174000"]
+            },
+            "description": "Delete a folder by ID."
+          },
+          "response": [
+            {
+              "name": "Deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/folders/123e4567-e89b-12d3-a456-426614174000",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "folders", "123e4567-e89b-12d3-a456-426614174000"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "Base URL for the Afrisinc Assets API"
+    },
+    {
+      "key": "API_KEY",
+      "value": "your-api-key-here",
+      "type": "string",
+      "description": "API Key for authentication (set in environment or header)"
+    }
+  ]
+}

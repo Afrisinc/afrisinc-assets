@@ -355,7 +355,7 @@ paths:
       tags:
         - Assets
       summary: Get asset statistics
-      description: Retrieve aggregate statistics about all assets.
+      description: Retrieve aggregate statistics about all assets, including counts by type.
       responses:
         '200':
           description: Asset statistics
@@ -364,19 +364,40 @@ paths:
               schema:
                 type: object
                 properties:
-                  total_count:
-                    type: integer
-                    example: 150
-                  total_size_bytes:
-                    type: integer
-                    example: 524288000
-                  by_type:
+                  ok:
+                    type: boolean
+                    example: true
+                  data:
                     type: object
-                    example:
-                      "image/jpeg": 50
-                      "image/png": 30
-                      "video/mp4": 20
-                      "application/pdf": 50
+                    properties:
+                      total_assets:
+                        type: integer
+                        description: Total number of non-deleted assets
+                        example: 150
+                      total_bytes:
+                        type: integer
+                        description: Total size in bytes of all assets
+                        example: 524288000
+                      total_folders:
+                        type: integer
+                        description: Total number of folders
+                        example: 5
+                      image_count:
+                        type: integer
+                        description: Total number of image assets
+                        example: 80
+                      video_count:
+                        type: integer
+                        description: Total number of video assets
+                        example: 20
+                      document_count:
+                        type: integer
+                        description: Total number of document assets
+                        example: 30
+                      font_count:
+                        type: integer
+                        description: Total number of font assets
+                        example: 20
         '401':
           description: Unauthorized
         '500':

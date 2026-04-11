@@ -41,6 +41,11 @@ func (s *LocalStore) Put(_ context.Context, key string, r io.Reader, _ int64, _ 
 		return nil, fmt.Errorf("storage: write file: %w", err)
 	}
 
+	// Explicitly sync to ensure data is written to disk
+	if err := f.Sync(); err != nil {
+		return nil, fmt.Errorf("storage: sync file: %w", err)
+	}
+
 	return &Object{Key: key, SizeBytes: n}, nil
 }
 

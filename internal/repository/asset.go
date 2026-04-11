@@ -52,7 +52,7 @@ func (r *AssetRepo) Create(ctx context.Context, a *model.Asset) error {
 }
 
 func (r *AssetRepo) GetByID(ctx context.Context, id string) (*model.Asset, error) {
-	query := `SELECT` + assetColumns + `FROM assets WHERE id = $1 AND deleted_at IS NULL`
+	query := `SELECT ` + assetColumns + ` FROM assets WHERE id = $1 AND deleted_at IS NULL`
 	row := r.db.QueryRow(ctx, query, id)
 	a, err := scanAsset(row)
 	if err == pgx.ErrNoRows {

@@ -14,7 +14,6 @@ import (
 	"github.com/afrisinc/assets/internal/repository"
 	"github.com/afrisinc/assets/internal/storage"
 	"github.com/afrisinc/assets/pkg/fileutil"
-	"github.com/afrisinc/assets/pkg/imageutil"
 )
 
 // UploadInput carries all data needed for a single upload operation.
@@ -46,28 +45,13 @@ func (s *AssetService) Upload(ctx context.Context, in *UploadInput) (*model.Asse
 	storageKey := buildKey(in.MIMEType, id, safeExt)
 
 	// For images we decode dimensions before storing.
-	// We tee the reader so we don't need to seek.
+	// Disabled: dimension extraction caused race condition with concurrent pipe writes
+	// when storage implementation uses background goroutines.
+	// TODO: Re-implement by buffering to memory first or using post-storage extraction
 	var width, height *int
 
-	var uploadReader io.Reader = in.Reader
-	if imageutil.IsRasterImage(in.MIMEType) {
-		pr, pw := io.Pipe()
-		tr := io.TeeReader(in.Reader, pw)
-
-		go func() {
-			w, h, err := imageutil.Dimensions(pr)
-			if err == nil {
-				width, height = &w, &h
-			}
-			pr.Close()
-		}()
-
-		uploadReader = tr
-		// Close the write-end once the tee is drained
-		defer pw.Close()
-	}
-
-	obj, err := s.store.Put(ctx, storageKey, uploadReader, in.SizeBytes, in.MIMEType)
+	// Upload the file to storage
+	obj, err := s.store.Put(ctx, storageKey, in.Reader, in.SizeBytes, in.MIMEType)
 	if err != nil {
 		return nil, fmt.Errorf("asset upload: put object: %w", err)
 	}
@@ -83,6 +67,11 @@ func (s *AssetService) Upload(ctx context.Context, in *UploadInput) (*model.Asse
 		Height:       height,
 		StorageKey:   storageKey,
 		Tags:         in.Tags,
+	}
+
+	// Ensure tags is never nil for database insert (column is NOT NULL DEFAULT '{}')
+	if asset.Tags == nil {
+		asset.Tags = []string{}
 	}
 
 	if err := s.assets.Create(ctx, asset); err != nil {

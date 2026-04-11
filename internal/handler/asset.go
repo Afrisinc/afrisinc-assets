@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -57,6 +59,15 @@ func (h *AssetHandler) Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Buffer file content to avoid streaming/closure race conditions
+	// This ensures the file is completely read from the multipart form
+	// before being written to storage
+	fileBuffer := new(bytes.Buffer)
+	if _, err := io.Copy(fileBuffer, file); err != nil {
+		response.BadRequest(w, "unable to read file: "+err.Error())
+		return
+	}
+
 	var folderID *string
 	if fid := r.FormValue("folder_id"); fid != "" {
 		folderID = &fid
@@ -75,8 +86,8 @@ func (h *AssetHandler) Upload(w http.ResponseWriter, r *http.Request) {
 		FolderID:     folderID,
 		OriginalName: header.Filename,
 		MIMEType:     mimeType,
-		SizeBytes:    header.Size,
-		Reader:       file,
+		SizeBytes:    int64(fileBuffer.Len()),
+		Reader:       fileBuffer,
 		Tags:         tags,
 	}
 
@@ -160,8 +171,9 @@ func (h *AssetHandler) Download(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Length", strconv.FormatInt(asset.SizeBytes, 10))
 	w.Header().Set("Cache-Control", "private, max-age=3600")
 
-	http.ServeContent(w, r, asset.Name, asset.CreatedAt,
-		&readSeeker{rc: rc}) // see readSeeker below
+	// Stream file directly to avoid seeking issues
+	w.WriteHeader(http.StatusOK)
+	_, _ = io.Copy(w, rc)
 }
 
 // Delete handles DELETE /api/v1/assets/{id}
@@ -245,22 +257,3 @@ func queryInt(s string, fallback int) int {
 	return fallback
 }
 
-// readSeeker adapts an io.ReadCloser to io.ReadSeeker for http.ServeContent.
-// Seeking backwards is not supported — only forward-only streaming is used here.
-type readSeeker struct {
-	rc  interface{ Read([]byte) (int, error) }
-	pos int64
-}
-
-func (rs *readSeeker) Read(p []byte) (int, error) {
-	n, err := rs.rc.Read(p)
-	rs.pos += int64(n)
-	return n, err
-}
-
-func (rs *readSeeker) Seek(offset int64, whence int) (int64, error) {
-	if whence == 1 && offset == 0 {
-		return rs.pos, nil // tell-only seek — used by http.ServeContent
-	}
-	return 0, fmt.Errorf("seek not supported on streaming response")
-}
