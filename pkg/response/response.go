@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"os"
 )
 
 // envelope is the top-level JSON wrapper for every response.
@@ -12,6 +13,7 @@ type envelope struct {
 	Data    any    `json:"data,omitempty"`
 	Error   string `json:"error,omitempty"`
 	Message string `json:"message,omitempty"`
+	Details string `json:"details,omitempty"` // development only
 }
 
 // JSON writes a 200 OK response with the given payload.
@@ -55,9 +57,18 @@ func Forbidden(w http.ResponseWriter) {
 }
 
 // InternalError logs the error and returns a safe 500 to the client.
+// In development mode (DEBUG=1), includes the actual error details.
 func InternalError(w http.ResponseWriter, err error) {
 	slog.Error("internal server error", "error", err)
-	Error(w, http.StatusInternalServerError, "an unexpected error occurred")
+	msg := "an unexpected error occurred"
+	details := ""
+
+	// Include error details in development mode
+	if os.Getenv("DEBUG") == "1" {
+		details = err.Error()
+	}
+
+	write(w, http.StatusInternalServerError, envelope{OK: false, Error: msg, Details: details})
 }
 
 // ValidationErrors writes a 422 with a map of field → message.
