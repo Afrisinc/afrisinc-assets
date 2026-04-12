@@ -21,10 +21,13 @@ func NewFolderHandler(svc *service.FolderService) *FolderHandler {
 }
 
 // Create handles POST /api/v1/folders
+// Supports creating a single folder or a nested path
 func (h *FolderHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		ParentID    *string `json:"parent_id"` // for nested folders
+		Path        string  `json:"path"`      // for creating full hierarchy (e.g., "marketplace/account-123/templates")
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		response.BadRequest(w, "invalid JSON body")
@@ -32,6 +35,25 @@ func (h *FolderHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vld := validator.New()
+
+	// If path is provided, create nested hierarchy
+	if body.Path != "" {
+		vld.Required(body.Path, "path")
+		if !vld.Valid() {
+			response.ValidationErrors(w, vld.Errors())
+			return
+		}
+
+		folder, err := h.svc.CreateNested(r.Context(), body.Path)
+		if err != nil {
+			response.InternalError(w, err)
+			return
+		}
+		response.Created(w, folder)
+		return
+	}
+
+	// Otherwise create single folder
 	vld.Required(body.Name, "name")
 	vld.MaxLen(body.Name, 100, "name")
 	vld.MaxLen(body.Description, 500, "description")
@@ -43,6 +65,7 @@ func (h *FolderHandler) Create(w http.ResponseWriter, r *http.Request) {
 	folder, err := h.svc.Create(r.Context(), service.CreateFolderInput{
 		Name:        body.Name,
 		Description: body.Description,
+		ParentID:    body.ParentID,
 	})
 	if err != nil {
 		response.InternalError(w, err)

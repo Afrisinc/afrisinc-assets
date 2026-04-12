@@ -18,17 +18,17 @@ func NewFolderRepo(db *pgxpool.Pool) *FolderRepo {
 
 func (r *FolderRepo) Create(ctx context.Context, f *model.Folder) error {
 	query := `
-		INSERT INTO folders (id, name, slug, description)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO folders (id, parent_id, name, slug, path, description)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING created_at, updated_at`
-	return r.db.QueryRow(ctx, query, f.ID, f.Name, f.Slug, f.Description).
+	return r.db.QueryRow(ctx, query, f.ID, f.ParentID, f.Name, f.Slug, f.Path, f.Description).
 		Scan(&f.CreatedAt, &f.UpdatedAt)
 }
 
 func (r *FolderRepo) GetByID(ctx context.Context, id string) (*model.Folder, error) {
 	f := &model.Folder{}
 	err := r.db.QueryRow(ctx, `
-		SELECT f.id, f.name, f.slug, f.description,
+		SELECT f.id, f.parent_id, f.name, f.slug, f.path, f.description,
 		       COUNT(a.id) AS asset_count,
 		       COALESCE(SUM(a.size_bytes), 0) AS total_bytes,
 		       f.created_at, f.updated_at
@@ -36,7 +36,7 @@ func (r *FolderRepo) GetByID(ctx context.Context, id string) (*model.Folder, err
 		LEFT JOIN assets a ON a.folder_id = f.id AND a.deleted_at IS NULL
 		WHERE f.id = $1
 		GROUP BY f.id`, id,
-	).Scan(&f.ID, &f.Name, &f.Slug, &f.Description,
+	).Scan(&f.ID, &f.ParentID, &f.Name, &f.Slug, &f.Path, &f.Description,
 		&f.AssetCount, &f.TotalBytes, &f.CreatedAt, &f.UpdatedAt)
 	if err == pgx.ErrNoRows {
 		return nil, ErrNotFound
@@ -46,7 +46,7 @@ func (r *FolderRepo) GetByID(ctx context.Context, id string) (*model.Folder, err
 
 func (r *FolderRepo) List(ctx context.Context) ([]*model.Folder, error) {
 	rows, err := r.db.Query(ctx, `
-		SELECT f.id, f.name, f.slug, f.description,
+		SELECT f.id, f.parent_id, f.name, f.slug, f.path, f.description,
 		       COUNT(a.id) AS asset_count,
 		       COALESCE(SUM(a.size_bytes), 0) AS total_bytes,
 		       f.created_at, f.updated_at
@@ -62,7 +62,7 @@ func (r *FolderRepo) List(ctx context.Context) ([]*model.Folder, error) {
 	var folders []*model.Folder
 	for rows.Next() {
 		f := &model.Folder{}
-		if err := rows.Scan(&f.ID, &f.Name, &f.Slug, &f.Description,
+		if err := rows.Scan(&f.ID, &f.ParentID, &f.Name, &f.Slug, &f.Path, &f.Description,
 			&f.AssetCount, &f.TotalBytes, &f.CreatedAt, &f.UpdatedAt); err != nil {
 			return nil, err
 		}

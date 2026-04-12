@@ -32,7 +32,14 @@ lint:
 
 ## migrate: apply database migrations
 migrate:
-	psql $$DATABASE_URL -f migrations/001_init.sql
+	@if [ ! -f .env ]; then echo "Error: .env file not found"; exit 1; fi
+	@sh -c 'set -a; . ./.env; set +a; \
+	echo "Applying migrations to $$DATABASE_URL..."; \
+	psql "$$DATABASE_URL" -f migrations/001_init.sql && \
+	echo "✓ Migration 001_init.sql completed"; \
+	psql "$$DATABASE_URL" -f migrations/002_add_nested_folders.sql && \
+	echo "✓ Migration 002_add_nested_folders.sql completed"; \
+	echo "✓ All migrations completed successfully"'
 
 ## tidy: tidy and verify modules
 tidy:

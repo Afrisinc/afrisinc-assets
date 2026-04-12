@@ -5,8 +5,10 @@ import "time"
 // Folder is a logical grouping of assets (not a file-system directory).
 type Folder struct {
 	ID          string    `json:"id"`
+	ParentID    *string   `json:"parent_id,omitempty"` // nil = root folder
 	Name        string    `json:"name"`
 	Slug        string    `json:"slug"`
+	Path        string    `json:"path,omitempty"`     // full path: /parent/child/name
 	Description string    `json:"description,omitempty"`
 	AssetCount  int       `json:"asset_count"`
 	TotalBytes  int64     `json:"total_bytes"`
