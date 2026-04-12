@@ -37,6 +37,7 @@ func (h *AssetHandler) Upload(w http.ResponseWriter, r *http.Request) {
 		response.BadRequest(w, "unable to parse form: "+e.Error())
 		return
 	}
+	defer r.MultipartForm.RemoveAll()
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
@@ -61,12 +62,16 @@ func (h *AssetHandler) Upload(w http.ResponseWriter, r *http.Request) {
 
 	// Buffer file content to avoid streaming/closure race conditions
 	// This ensures the file is completely read from the multipart form
-	// before being written to storage
+	// before being written to storage. We read into memory first so the
+	// multipart form reader is no longer needed during the storage write.
 	fileBuffer := new(bytes.Buffer)
 	if _, err := io.Copy(fileBuffer, file); err != nil {
 		response.BadRequest(w, "unable to read file: "+err.Error())
 		return
 	}
+
+	// Close the file handle to release multipart resources
+	file.Close()
 
 	var folderID *string
 	if fid := r.FormValue("folder_id"); fid != "" {
