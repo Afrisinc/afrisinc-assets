@@ -2,6 +2,8 @@ package router
 
 import (
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -48,6 +50,18 @@ func New(d *Deps) http.Handler {
 	// ── API Documentation (no auth) ─────────────────────────────────────
 	r.Get("/api/docs", d.Docs.SwaggerHTML)
 	r.Get("/api/docs/openapi.yaml", d.Docs.OpenAPI)
+
+	// ── File serving for local development (in production, Nginx serves this) ──
+	// Only enable in development mode
+	if os.Getenv("ENVIRONMENT") != "production" {
+		fileServer := http.FileServer(http.Dir(d.Config.Storage.LocalRoot))
+		r.Get("/files/*", func(w http.ResponseWriter, r *http.Request) {
+			// Strip /files prefix and serve
+			filePath := strings.TrimPrefix(r.URL.Path, "/files")
+			r.URL.Path = filePath
+			fileServer.ServeHTTP(w, r)
+		})
+	}
 
 	// ── API v1 (authenticated) ────────────────────────────────────────────
 	r.Route("/api/v1", func(r chi.Router) {

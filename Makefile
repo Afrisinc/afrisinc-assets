@@ -39,6 +39,8 @@ migrate:
 	echo "✓ Migration 001_init.sql completed"; \
 	psql "$$DATABASE_URL" -f migrations/002_add_nested_folders.sql && \
 	echo "✓ Migration 002_add_nested_folders.sql completed"; \
+	psql "$$DATABASE_URL" -f migrations/003_fix_slug_uniqueness.sql && \
+	echo "✓ Migration 003_fix_slug_uniqueness.sql completed"; \
 	echo "✓ All migrations completed successfully"'
 
 ## tidy: tidy and verify modules
