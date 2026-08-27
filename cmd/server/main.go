@@ -82,8 +82,15 @@ func runHealthCheck() int {
 		port = addr
 	}
 
-	client := http.Client{Timeout: 3 * time.Second}
-	resp, err := client.Get(fmt.Sprintf("http://127.0.0.1:%s/health/live", port))
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("http://127.0.0.1:%s/health/live", port), nil)
+	if err != nil {
+		return 1
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return 1
 	}
