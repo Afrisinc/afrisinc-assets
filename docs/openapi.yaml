@@ -41,9 +41,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  ok:
-                    type: boolean
-                    example: true
+                  status:
+                    type: string
+                    example: up
 
   /health/ready:
     get:
@@ -60,11 +60,37 @@ paths:
               schema:
                 type: object
                 properties:
-                  ok:
-                    type: boolean
-                    example: true
+                  status:
+                    type: string
+                    example: healthy
+                  db:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: up
+                      latencyMs:
+                        type: integer
+                        example: 4
         '503':
           description: Service not ready (database unavailable)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: degraded
+                  db:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: down
+                      error:
+                        type: string
+                        example: "context deadline exceeded"
 
   /api/v1/assets:
     get:
