@@ -31,6 +31,12 @@ func NoContent(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// Raw writes a response without the standard ok/data envelope — used for
+// health probes and other endpoints that must match an external contract.
+func Raw(w http.ResponseWriter, status int, v any) {
+	write(w, status, v)
+}
+
 // Error writes a structured error response.
 func Error(w http.ResponseWriter, status int, msg string) {
 	write(w, status, envelope{OK: false, Error: msg})

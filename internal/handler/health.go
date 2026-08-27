@@ -1,9 +1,7 @@
 package handler
 
 import (
-	"context"
 	"net/http"
-	"time"
 
 	"github.com/afrisinc/assets/pkg/response"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,29 +15,26 @@ func NewHealthHandler(db *pgxpool.Pool) *HealthHandler {
 	return &HealthHandler{db: db}
 }
 
-// Live handles GET /health/live — liveness probe (always 200 if process is up).
+// Live handles GET /health/live — liveness probe (always up if the process can respond).
 func (h *HealthHandler) Live(w http.ResponseWriter, r *http.Request) {
-	response.JSON(w, http.StatusOK, map[string]string{"status": "ok"})
+	response.Raw(w, http.StatusOK, map[string]string{"status": "up"})
 }
 
 // Ready handles GET /health/ready — readiness probe (checks DB connectivity).
 func (h *HealthHandler) Ready(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
-	defer cancel()
+	dbResult := checkDBHealth(r.Context(), h.db)
 
-	if err := h.db.Ping(ctx); err != nil {
-		response.JSON(w, http.StatusServiceUnavailable, map[string]string{
-			"status": "degraded",
-			"detail": "database unreachable",
-		})
-		return
+	allUp := dbResult.statusCode == http.StatusOK
+
+	status := "healthy"
+	statusCode := http.StatusOK
+	if !allUp {
+		status = "degraded"
+		statusCode = http.StatusServiceUnavailable
 	}
 
-	stat := h.db.Stat()
-	response.JSON(w, http.StatusOK, map[string]any{
-		"status":            "ok",
-		"db_total_conns":    stat.TotalConns(),
-		"db_idle_conns":     stat.IdleConns(),
-		"db_acquired_conns": stat.AcquiredConns(),
+	response.Raw(w, statusCode, map[string]any{
+		"status": status,
+		"db":     dbResult.db,
 	})
 }
